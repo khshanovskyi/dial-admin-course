@@ -7,9 +7,7 @@ from typing_extensions import override
 
 class PrePostInterceptor(ChatCompletionInterceptor):
 
-    def __init__(self, interceptor_name: str, **data: Any):
-        super().__init__(**data)
-        self.interceptor_name = interceptor_name
+    interceptor_name: str
 
     @override
     async def on_stream_start(self) -> None:

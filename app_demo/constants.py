@@ -1,3 +1,3 @@
 import os
 
-DIAL_URL = os.getenv("DIAL_URL", "http://localhost:8080")
+DIAL_URL = os.getenv("DIAL_URL", "http://localhost:8081")
