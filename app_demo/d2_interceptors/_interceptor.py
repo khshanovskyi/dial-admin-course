@@ -22,7 +22,7 @@ class PrePostInterceptor(ChatCompletionInterceptor):
     async def on_stream_end(self) -> None:
         with Stage(self.response._queue,
                    0,
-                   1,
+                   100,
                    f"{self.interceptor_name} Goodbye Stage",
                    ) as stage:
             stage.append_content(f"{self.interceptor_name} Goodbye, from {self.interceptor_name} Goodbye Stage👋")
