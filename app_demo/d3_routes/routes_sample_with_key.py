@@ -26,15 +26,15 @@ class TaskResponse(BaseModel):
     completed: bool
 
 
-def verify_api_key(x_api_key: Optional[str] = Header(None)) -> None:
+def verify_api_key(api_key: Optional[str] = Header(None)) -> None:
     """Verify the API key from request header."""
     print("api-key")
-    if x_api_key is None:
+    if api_key is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="X-Api-Key header is missing"
         )
-    if x_api_key != API_KEY:
+    if api_key != API_KEY:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid API key"
@@ -42,11 +42,11 @@ def verify_api_key(x_api_key: Optional[str] = Header(None)) -> None:
 
 
 @app.post("/tasks", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
-async def create_task(task: TaskCreate, x_api_key: Optional[str] = Header(None)):
+async def create_task(task: TaskCreate, api_key: Optional[str] = Header(None)):
     """Create a new task."""
     global task_id_counter
 
-    verify_api_key(x_api_key)
+    verify_api_key(api_key)
 
     task_data = {
         "id": task_id_counter,
@@ -61,10 +61,10 @@ async def create_task(task: TaskCreate, x_api_key: Optional[str] = Header(None))
 
 
 @app.get("/tasks/{task_id}", response_model=TaskResponse)
-async def get_task(task_id: int, x_api_key: Optional[str] = Header(None)):
+async def get_task(task_id: int, api_key: Optional[str] = Header(None)):
     """Get a task by ID."""
     print("get")
-    verify_api_key(x_api_key)
+    verify_api_key(api_key)
 
     if task_id not in tasks_db:
         raise HTTPException(
@@ -75,17 +75,17 @@ async def get_task(task_id: int, x_api_key: Optional[str] = Header(None)):
     return tasks_db[task_id]
 
 @app.get("/tasks", response_model=list[TaskResponse])
-async def get_tasks(x_api_key: Optional[str] = Header(None)):
+async def get_tasks(api_key: Optional[str] = Header(None)):
     """Get all tasks."""
-    verify_api_key(x_api_key)
+    verify_api_key(api_key)
 
     return list(tasks_db.values())
 
 
 @app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_task(task_id: int, x_api_key: Optional[str] = Header(None)):
+async def delete_task(task_id: int, api_key: Optional[str] = Header(None)):
     """Delete a task by ID."""
-    verify_api_key(x_api_key)
+    verify_api_key(api_key)
 
     if task_id not in tasks_db:
         raise HTTPException(
