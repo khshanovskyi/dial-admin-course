@@ -1,0 +1,165 @@
+{
+  "info": {
+    "_postman_id": "3cf19051-ffe9-42ec-981b-e082d8c07664",
+    "name": "routes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "13054272"
+  },
+  "item": [
+    {
+      "name": "tasks",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Api-Key",
+            "value": "dial_api_key",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8081/tasks",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "tasks"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "create task",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Api-Key",
+            "value": "dial_api_key",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Create 1st route\",\n    \"description\": \"Create 1st route in Admin panel and test it\",\n    \"completed\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8081/tasks",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "tasks"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "tasks/1",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Api-Key",
+            "value": "dial_api_key",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8081/tasks/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "tasks",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "delete task",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Api-Key",
+            "value": "dial_api_key",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8081/tasks/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "tasks",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "approute",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Api-Key",
+            "value": "dial_api_key",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8081/v1/deployments/quickapp-standalone/route/tasks",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "v1",
+            "deployments",
+            "quickapp-standalone",
+            "route",
+            "tasks"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
