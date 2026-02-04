@@ -1,0 +1,25 @@
+{
+  "toolSets": [
+    {
+      "name": "Sequential Thinking toolset",
+      "folderId": "public/",
+      "version": "0.0.1",
+      "endpoint": "https://remote.mcpservers.org/sequentialthinking/mcp",
+      "displayName": "Sequential Thinking toolset",
+      "displayVersion": "0.0.1",
+      "iconUrl": "",
+      "description": "An MCP server implementation that provides a tool for dynamic and reflective problem-solving through a structured thinking process.",
+      "descriptionKeywords": [],
+      "maxRetryAttempts": 1,
+      "createdAt": 1770199229896,
+      "transport": "http",
+      "allowedTools": [],
+      "authSettings": {
+        "authenticationType": "none",
+        "globalAuthStatus": "signed_out",
+        "userLevelAuthStatus": "signed_out"
+      },
+      "forwardPerRequestKey": false
+    }
+  ]
+}
