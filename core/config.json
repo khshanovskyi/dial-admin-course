@@ -1,0 +1,106 @@
+{
+  "routes": {},
+  "models": {
+    "gpt-4o": {
+      "name": "gpt-4o",
+      "endpoint": "http://adapter-dial-openai:5000/openai/deployments/gpt-4o/chat/completions",
+      "displayName": "GPT 4o",
+      "iconUrl": "gpt4.svg",
+      "description": "",
+      "forwardAuthToken": false,
+      "features": {
+        "system_prompt_supported": true,
+        "tools_supported": false,
+        "seed_supported": false,
+        "url_attachments_supported": false,
+        "folder_attachments_supported": false,
+        "allow_resume": true,
+        "accessible_by_per_request_key": true,
+        "content_parts_supported": false,
+        "temperature_supported": true,
+        "parallel_tool_calls_supported": true,
+        "assistant_attachments_in_request_supported": false
+      },
+      "defaults": {},
+      "interceptors": [],
+      "descriptionKeywords": [],
+      "maxRetryAttempts": 1,
+      "createdAt": 1769156666985,
+      "updatedAt": 1769614378687,
+      "dependencies": [],
+      "type": "chat",
+      "pricing": {
+        "unit": "token",
+        "prompt": "0.0000025",
+        "completion": "0.00001"
+      },
+      "upstreams": [
+        {
+          "endpoint": "https://api.openai.com/v1/chat/completions",
+          "key": "WRONG_API_KEY",
+          "weight": 1,
+          "tier": 0
+        }
+      ],
+      "overrideName": "gpt-4o",
+      "fieldsHashingOrder": [
+        "prefix.body.tools",
+        "prefix.body.messages"
+      ]
+    }
+  },
+  "addons": {},
+  "applications": {
+    "echo": {
+      "name": "echo",
+      "user_roles": [],
+      "endpoint": "http://host.docker.internal:5022/openai/deployments/echo/chat/completions",
+      "display_name": "Echo app",
+      "description": "Simple application that is mirroring input from request to response",
+      "forward_auth_token": false,
+      "features": {
+        "system_prompt_supported": true,
+        "tools_supported": false,
+        "seed_supported": false,
+        "url_attachments_supported": false,
+        "folder_attachments_supported": false,
+        "allow_resume": true,
+        "accessible_by_per_request_key": true,
+        "content_parts_supported": false,
+        "temperature_supported": true,
+        "parallel_tool_calls_supported": true,
+        "assistant_attachments_in_request_supported": false
+      },
+      "defaults": {},
+      "interceptors": [],
+      "description_keywords": [],
+      "max_retry_attempts": 1,
+      "created_at": 1769156666985,
+      "updated_at": 1769706485832,
+      "dependencies": [],
+      "application_properties": {
+        "applicationProperties": {}
+      },
+      "routes": {}
+    }
+  },
+  "toolsets": {
+  },
+  "assistant": {
+    "assistants": {}
+  },
+  "keys": {
+
+  },
+  "roles": {
+    "admin": {
+      "name": "admin",
+      "limits": {}
+    },
+
+  },
+  "retriableErrorCodes": [],
+  "interceptors": {},
+  "globalInterceptors": [],
+  "applicationTypeSchemas": []
+}
