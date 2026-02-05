@@ -213,6 +213,8 @@ installing them directly on your computer.
 
 ### Starting the Platform
 
+All the services are already configured in the [docker-compose.yml](/docker-compose.yml).
+
 <details> 
 <summary><b>Instructions</b></summary>
 
