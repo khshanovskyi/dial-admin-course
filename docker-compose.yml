@@ -1,4 +1,9 @@
 services:
+  # =============================================================================
+  # INFRASTRUCTURE SERVICES
+  # =============================================================================
+
+  # Redis - In-memory data store used for caching and session management
   redis:
     image: redis:7.2.4-alpine3.19
     restart: always
@@ -13,8 +18,20 @@ services:
       --loglevel warning
     mem_limit: 2200M
 
+  # Redis Insight - Web-based GUI for monitoring and managing Redis database
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    ports:
+      - "6380:5540"
+
+  # =============================================================================
+  # DIAL CORE SERVICES
+  # =============================================================================
+
+  # DIAL Core - Central orchestration service that routes requests to models and applications
+  # https://github.com/epam/ai-dial-core
   core:
-    image: epam/ai-dial-core:0.39.0
+    image: epam/ai-dial-core:0.41.0-rc
     platform: linux/amd64
     environment:
       'JAVA_OPTS': '-Dgflog.config=/opt/settings/gflog.xml'
@@ -33,7 +50,8 @@ services:
       'aidial.storage.createBucket': 'true'
       'aidial.storage.overrides': '{"jclouds.filesystem.basedir": "data"}'
       'aidial.applications.includeCustomApps': 'true'
-      'aidial.config.reload': 1000
+      'aidial.config.reload': 3000
+      'aidial.log.level': info
     ports:
       - "${DIAL_CORE_HOST_PORT}:8080"
     volumes:
@@ -45,6 +63,12 @@ services:
       - redis
     restart: always
 
+  # =============================================================================
+  # MODEL ADAPTERS - Connect DIAL to various AI model providers
+  # =============================================================================
+
+  # OpenAI Adapter - Enables integration with OpenAI models (GPT-5, DALL-E, etc.)
+  # https://github.com/epam/ai-dial-adapter-openai
   adapter-dial-openai:
     image: epam/ai-dial-adapter-openai:development
     platform: linux/amd64
@@ -54,6 +78,8 @@ services:
       DIAL_URL: "http://core:8080"
       LOG_LEVEL: "INFO"
 
+  # AWS Bedrock Adapter - Enables integration with AWS Bedrock models (Claude, Titan, etc.)
+  # https://github.com/epam/ai-dial-adapter-bedrock
   adapter-dial-bedrock:
     image: epam/ai-dial-adapter-bedrock:development
     platform: linux/amd64
@@ -62,6 +88,8 @@ services:
       DIAL_URL: "http://core:8080"
       LOG_LEVEL: "DEBUG"
 
+  # Google Vertex AI Adapter - Enables integration with Google Cloud AI models (Gemini, PaLM, etc.)
+  # https://github.com/epam/ai-dial-adapter-vertexai
   adapter-dial-vertexai:
     image: epam/ai-dial-adapter-vertexai:development
     platform: linux/amd64
@@ -69,6 +97,11 @@ services:
       DIAL_URL: "http://core:8080"
       LOG_LEVEL: "DEBUG"
 
+  # =============================================================================
+  # AUTHENTICATION & SECURITY
+  # =============================================================================
+
+  # Keycloak - Identity and access management server for user authentication
   keycloak:
     image: keycloak/keycloak:26.3
     user: root
@@ -100,14 +133,22 @@ services:
       start_period: 60s
     restart: always
 
+  # =============================================================================
+  # USER INTERFACE
+  # =============================================================================
+
+  # Themes - Provides theming and branding assets for DIAL Chat interface
+  # https://github.com/epam/ai-dial-chat-themes
   themes:
     image: epam/ai-dial-chat-themes:development
     platform: linux/amd64
     ports:
       - "3101:8080"
 
+  # DIAL Chat - Web-based chat interface for interacting with AI models
+  # https://github.com/epam/ai-dial-chat
   chat:
-    image: epam/ai-dial-chat:development
+    image: epam/ai-dial-chat:0.43.0-rc
     platform: linux/amd64
     environment:
       AUTH_KEYCLOAK_CLIENT_ID: "dial-chat"
@@ -115,7 +156,7 @@ services:
       AUTH_KEYCLOAK_HOST: "http://keycloak:${KC_PORT}/realms/dial/"
       AUTH_KEYCLOAK_SECRET: "${AUTH_KEYCLOAK_SECRET}"
       DIAL_API_HOST: "http://core:8080"
-      ENABLED_FEATURES: "conversations-section,prompts-section,top-settings,top-clear-conversation,top-chat-info,top-chat-model-settings,empty-chat-settings,header,footer,request-api-key,report-an-issue,likes,conversations-sharing,input-files,attachments-manager,prompts-sharing,prompts-publishing,conversations-publishing,custom-logo,input-links,custom-applications,message-templates,marketplace,quick-apps,code-apps,applications-sharing,marketplace-table-view,toolsets"
+      ENABLED_FEATURES: "conversations-section,prompts-section,top-settings,top-clear-conversation,top-chat-info,top-chat-model-settings,empty-chat-settings,header,footer,request-api-key,report-an-issue,likes,conversations-sharing,input-files,attachments-manager,prompts-sharing,prompts-publishing,conversations-publishing,custom-logo,input-links,custom-applications,message-templates,marketplace,code-apps,applications-sharing,marketplace-table-view,toolsets"
       KEEP_ALIVE_TIMEOUT: ${CHAT_KEEP_ALIVE_TIMEOUT:-20000}
       NEXTAUTH_SECRET: "${NEXTAUTH_SECRET}"
       THEMES_CONFIG_HOST: "http://themes:8080"
@@ -124,6 +165,8 @@ services:
       DEFAULT_MODEL: "gpt-4o"
       ALLOWED_IFRAME_ORIGINS: http://localhost:3301
       ALLOWED_IFRAME_SOURCES: http://localhost:3301
+      ADMIN_ROLE_NAMES: 'admin,'
+      PUBLICATION_FILTERS: "roles"
     ports:
       - "${DIAL_CHAT_HOST_PORT}:3000"
     depends_on:
@@ -132,6 +175,11 @@ services:
       - keycloak
     restart: always
 
+  # =============================================================================
+  # MONITORING & ANALYTICS
+  # =============================================================================
+
+  # InfluxDB - Time-series database for storing metrics and analytics data
   influxdb:
     user: ${UID:-root}
     image: influxdb:latest
@@ -148,14 +196,7 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
 
-  prometheus:
-    image: prom/prometheus:latest
-    platform: linux/amd64
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-
+  # Grafana - Visualization and dashboarding platform for metrics
   grafana:
     user: ${UID:-root}
     image: grafana/grafana:latest
@@ -174,6 +215,8 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
 
+  # Analytics - Real-time analytics processor for DIAL usage data
+  # https://github.com/epam/ai-dial-analytics-realtime
   analytics:
     image: epam/ai-dial-analytics-realtime:development
     platform: linux/amd64
@@ -186,6 +229,7 @@ services:
       - INFLUX_BUCKET=${INFLUXDB_BUCKET}
       - INFLUX_API_TOKEN=${INFLUXDB_ADMIN_TOKEN}
 
+  # Vector Logger - Log aggregation and shipping service for DIAL Core logs
   logger:
     user: ${UID:-root}
     image: timberio/vector:0.45.0-debian
@@ -199,8 +243,14 @@ services:
       - ./vector.yaml:/etc/vector/vector.yaml
       - ${DIAL_DIR:-.}/core-logs/:/app/log
 
+  # =============================================================================
+  # ADMINISTRATION
+  # =============================================================================
+
+  # Admin Backend - API server for DIAL administration and configuration management
+  # https://github.com/epam/ai-dial-admin-backend
   admin-backend:
-    image: epam/ai-dial-admin-backend:0.12.0
+    image: epam/ai-dial-admin-backend:0.14.0-rc
     platform: linux/amd64
     user: ${UID:-root}
     environment:
@@ -231,8 +281,10 @@ services:
       - ${DIAL_DIR:-.}/core:/app/config
     restart: always
 
+  # Admin Frontend - Web-based administration console for managing DIAL platform
+  # https://github.com/epam/ai-dial-admin-frontend
   admin-frontend:
-    image: epam/ai-dial-admin-frontend:0.12.3
+    image: epam/ai-dial-admin-frontend:0.14.0-rc
     platform: linux/amd64
     environment:
       GRAFANA_LINK: "http://localhost:3002/"
@@ -245,6 +297,7 @@ services:
       AUTH_KEYCLOAK_SECRET: "${AUTH_KEYCLOAK_SECRET}"
       ADMIN_ROLE_NAMES: 'ConfigAdmin,admin'
       THEMES_CONFIG_URL: "http://themes:8080"
+      PUBLICATION_FILTERS: "roles,title"
     ports:
       - "${DIAL_ADMIN_FRONTEND_HOST_PORT}:3000"
     depends_on:
@@ -252,6 +305,12 @@ services:
       - admin-backend
     restart: always
 
+  # =============================================================================
+  # APPLICATIONS
+  # =============================================================================
+
+  # Quick Apps 2.0 - Application runner for no-code AI applications built with Quick App builder
+  # https://github.com/epam/ai-dial-quickapps-backend
   quickapps-2-0:
     image: epam/ai-dial-quickapps-backend:0.1.0-rc
     platform: linux/amd64
