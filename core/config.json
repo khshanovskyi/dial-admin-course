@@ -96,8 +96,7 @@
     "admin": {
       "name": "admin",
       "limits": {}
-    },
-
+    }
   },
   "retriableErrorCodes": [],
   "interceptors": {},
